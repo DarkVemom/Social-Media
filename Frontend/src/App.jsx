@@ -4,7 +4,7 @@ import { Navigate, Route, Router, Routes, useLocation } from "react-router-dom";
 import UserPage from "./pages/UserPage";
 import PostPage from "./pages/PostPage";
 import Header from "./components/Header";
-import Homepage from "./pages/Homepage";
+import Homepage from "./pages/HomePage";
 import ForgotPasswordForm from "./components/ForgotPasswordForm";
 import VerifyEmailForm from "./components/VerifyEmailForm";
 import LoginCard from "./components/LoginCard";
@@ -15,7 +15,7 @@ import ResetPasswordForm from "./components/ResetPasswordForm";
 import CreatePost from "./components/CreatePost";
 // import DemoPostFetch from './pages/DemoPostFetch'
 import ChatPage from "./pages/ChatPage";
-import { SocketContextProvider } from "./context/SocketContext";
+// import { SocketContextProvider } from "./context/SocketContext";
 import SettingsPage from "./pages/SettingsPage";
 import ParentSettinges from "./pages/ParentSettinges";
 import AuthPage from "./pages/AuthPage";
