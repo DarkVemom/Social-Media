@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon Backend/server.js",
     "start": "NODE_ENV=production node Backend/server.js",
-    "build":"npm install && npm install --prefix Frontend && npm run build --prefix Frontend"
+    "build": "npm install && npm install --prefix Frontend && npm run build --prefix Frontend"
   },
   "type": "module",
   "keywords": [],
@@ -16,6 +16,7 @@
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
     "cookie-parser": "^1.4.7",
+    "cron": "^4.1.0",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

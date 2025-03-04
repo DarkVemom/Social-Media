@@ -9,7 +9,7 @@ const server = http.createServer(app);
 //both server in one
 const io = new Server(server, {
 	cors: {
-		origin: "http://localhost:7777",
+		origin: "https://social-media-1-b6ia.onrender.com",
 		methods: ["GET", "POST"],
 	},
 });

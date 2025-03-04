@@ -7,11 +7,13 @@ import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import {v2 as cloudinary} from 'cloudinary';
-import {io, server, app} from './socket/socket.js'
+import {io, server, app} from './socket/socket.js';
+import job from './cron/cron.js';
 
 
 dotenv.config();
 connectDB();
+job.start();
 // const app = express();
 
 const PORT = process.env.PORT || 5000;
