@@ -16,7 +16,7 @@ export const SocketContextProvider = ({ children }) => {
 	const user = JSON.parse(localStorage.getItem('user-threads'))
 
 	useEffect(() => {
-		const socket = io("http://localhost:5002", {
+		const socket = io("https://social-media-1-b6ia.onrender.com", {
 			query: {
 				userId: user?._id,
 			},

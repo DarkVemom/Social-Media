@@ -9,7 +9,7 @@ export default defineConfig({
     port:7777,
   proxy: {
     "/api": {
-      target: "http://localhost:5002",
+      target: "https://social-media-1-b6ia.onrender.com",
       changeOrigin: true,
       secure: false,
       // rewrite: (path) => path.replace(/^\/api/, '')
