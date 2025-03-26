@@ -251,6 +251,17 @@ const updateUser = async (req, res) => {
 			{ arrayFilters: [{ "reply.userId": userId }] }
 		);
 
+		await Post.updateMany(
+			{ "commentsOnReply.commenteruserId": userId },
+			{
+				$set: {
+					"commentsOnReply.$[reply].commenterusername": user.username,
+					"commentsOnReply.$[reply].commenteruserProfilePic": user.profilePic,
+				},
+			},
+			{ arrayFilters: [{ "reply.commenteruserId": userId }] }
+		);
+
 		//  password should be null in response
 		user.password = null;
 

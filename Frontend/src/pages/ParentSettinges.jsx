@@ -5,10 +5,21 @@ import { ExternalLinkIcon } from '@chakra-ui/icons'
 import useShowToast from '../hooks/useShowToast';
 
 const ParentSettinges = () => {
+  // const [loading, setLoading] = useState(false);
+  // const user = JSON.parse(localStorage.getItem('user-threads'))
+  // const showToast = useShowToast();
+  // const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
-  const user = JSON.parse(localStorage.getItem('user-threads'))
+  const [isFA, setIsFA] = useState(() => {
+    const user = JSON.parse(localStorage.getItem('user-threads'));
+    return user?.isFA || false;
+  });
+
   const showToast = useShowToast();
   const navigate = useNavigate();
+
+
   const handleSubmit = async () => {
 
     // Proceed with form submission or further processing
@@ -54,6 +65,10 @@ const ParentSettinges = () => {
       }
       if (data.success) {
         showToast("Success", "Two factor authentaction is removed ", "success");
+        const user = JSON.parse(localStorage.getItem('user-threads'));
+        user.isFA = false;
+        localStorage.setItem('user-threads', JSON.stringify(user));
+        setIsFA(false);
       }
     } catch (error) {
       showToast("Error", error.message, "error");
@@ -67,8 +82,7 @@ const ParentSettinges = () => {
       </Link>
 
 
-      {user.isFA ?
-        <Button
+      {/* {user.isFA ?  <Button
           size={'lg'}
           bg={useColorModeValue("gray.600", "gray.700")}
           color={'white'}
@@ -79,8 +93,7 @@ const ParentSettinges = () => {
 
         >
           Request Code to disable 2FA
-        </Button>:
-        <Button
+        </Button> :<Button
         loadingText='Sending Verification Email'
         size={'lg'}
         bg={useColorModeValue("gray.600", "gray.700")}
@@ -92,8 +105,38 @@ const ParentSettinges = () => {
         }
         isLoading={loading}>
         Request Code to enable 2FA
-      </Button> 
-}
+      </Button>
+      } */}
+
+{isFA ? (
+        <Button
+          size={'lg'}
+          bg={useColorModeValue('gray.600', 'gray.700')}
+          color={'white'}
+          _hover={{
+            bg: useColorModeValue('gray.700', 'gray.800'),
+          }}
+          onClick={() => handleSubmit1()}
+        >
+          Request Code to disable 2FA
+        </Button>
+      ) : (
+        <Button
+          loadingText="Sending Verification Email"
+          size={'lg'}
+          bg={useColorModeValue('gray.600', 'gray.700')}
+          color={'white'}
+          w={'100'}
+          _hover={{
+            bg: useColorModeValue('gray.700', 'gray.800'),
+          }}
+          onClick={() => handleSubmit()}
+          isLoading={loading}
+        >
+          Request Code to enable 2FA
+        </Button>
+      )}
+       
 
     </Flex>
   )

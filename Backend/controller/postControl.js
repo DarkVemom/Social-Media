@@ -168,6 +168,208 @@ const getUserPosts = async (req, res) => {
 	}
 };
 
+const replyToReply = async (req,res)=>{
+	try {
+		const { commenterToReplyId , commentertext , postToReplyId } = req.body;  // Replies body
+		const postId = req.params.id; // post id
+		const commenteruserId = req.user._id; //Comment replies id
+		const commenteruserProfilePic = req.user.profilePic;
+		const commenterusername = req.user.username;
+		// const commenterToReplyId = req.body.commenterToReplyId; // body
+		// const postToReplyId = req.body.postToReplyId; // body
+
+		if (!commentertext) {
+			return res.status(400).json({ error: "Text field is required" });
+		}
+		const post = await Post.findById(postId);
+		if (!post) {
+			return res.status(404).json({ error: "Post not found" });
+		}
+		// to check weather the comment is comment on the exesting comment or not
+		const repl = post.replies.map((r) => r.userId.toString());
+		
+		if(!repl.includes(commenterToReplyId) ){
+			return res.status(404).json({ error: "This Id is not in this post replyies" });
+		}
+
+		if(!commenterToReplyId){
+			return res.status(404).json({error: "Whom to reply is required"});
+		}
+		if(!postToReplyId){
+			return res.status(404).json({error: "Whom to reply id is required"});
+		}
+		
+		
+		const reply = { commenteruserId, commentertext, commenteruserProfilePic, commenterusername, commenterToReplyId, postToReplyId };
+		post.commentsOnReply.push(reply);
+		await post.save();
+
+		
+		
+		res.status(200).json(reply);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
+const replyToLikeUnlike = async (req , res) => {
+	try {
+		const { id: postId } = req.params;
+		const  { replyId } = req.body;
+		const userId = req.user._id;
+
+		const post = await Post.findById(postId);
+
+		if (!post) {
+			return res.status(404).json({ error: "Post not found" });
+		}
+
+		const reply = post.replies.id(replyId);
+		if (!reply) {
+            return res.status(404).json({ error: "Reply not found" });
+        }
+
+		const userLikedReply = reply.likes.includes(userId);
+		
+		if (userLikedReply) {
+			// Unlike post
+			reply.likes.pull(userId);
+            await post.save();
+			res.status(200).json({ message: "Reply unliked successfully" });
+		} else {
+			// Like post
+			reply.likes.push(userId);
+			await post.save();
+			res.status(200).json({ message: "Reply liked successfully" });
+		}
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+// const repliesToLikeUnlike = async (req , res) => {
+// 	try {
+// 		const { id: postId } = req.params;
+// 		const  { replyId } = req.body;
+// 		const userId = req.user._id;
+
+// 		const post = await Post.findById(postId);
+
+// 		if (!post) {
+// 			return res.status(404).json({ error: "Post not found" });
+// 		}
+
+		
+// 		const reply =  post.commentsOnReply.id(replyId);  // Find the specific reply by replyId
+// 		if (!reply) {
+//             return res.status(404).json({ error: "Reply not found" });
+//         }
+
+// 		const userLikedReply = reply.commenterlikes.includes(userId);
+		
+// 		if (userLikedReply) {
+// 			// Unlike post
+// 			reply.commenterlikes.pull(userId);
+//             await post.save();
+// 			res.status(200).json({ message: "Reply unliked successfully" });
+// 		} else {
+// 			// Like post
+// 			reply.commenterlikes.push(userId);
+// 			await post.save();
+// 			res.status(200).json({ message: "Reply liked successfully" });
+// 		}
+// 	} catch (err) {
+// 		res.status(500).json({ error: err.message });
+// 	}
+// };
+const deleteReply = async (req, res) => {
+	try {
+		const { replyDelId } = req.body;
+		const post = await Post.findById(req.params.id);
+		if (!post) {
+			return res.status(404).json({ error: "Post not found" });
+		}
 
 
-export {createPost, getPost ,deletePost ,likeUnlikePost ,replyToPost ,getFeedPosts ,getUserPosts};
+		// const replyIndex = post.commentsOnReply.findIndex((reply) => reply._id.toString() === replyDelId);
+		
+        // if (replyIndex === -1) {
+        //     return res.status(404).json({ error: "Reply not found" });
+        // }
+
+        // // Check if the user is authorized to delete the reply
+        // if (post.commentsOnReply[replyIndex].commenteruserId.toString() !== req.user._id.toString()) {
+        //     return res.status(401).json({ error: "Unauthorized to delete this reply" });
+        // }
+
+        // // Remove the reply from the replies array
+        // post.commentsOnReply.splice(replyIndex, 1);
+        // await post.save();
+		// res.status(200).json({ message: "Reply deleted successfully" });
+
+
+
+
+		const replyIndex = post.replies.findIndex((reply) => reply._id.toString() === replyDelId);
+		const replyIndex1 = post.commentsOnReply.findIndex((reply) => reply.postToReplyId.toString() === replyDelId);
+
+		// console.log(replyIndex);
+		// console.log(replyIndex1);
+		
+        if (replyIndex === -1 && replyIndex1 === -1) {
+            return res.status(404).json({ error: "Reply not found" });
+        }
+
+        // Check if the user is authorized to delete the reply
+        // if (post.replies[replyIndex].userId.toString() !== req.user._id.toString() || post.commentsOnReply[replyIndex].postToReplyId.toString() !== replyDelId) {
+        //     return res.status(401).json({ error: "Unauthorized to delete this reply" });
+        // }
+
+
+        // Remove the reply from the replies array
+        post.replies.splice(replyIndex, 1);
+		post.commentsOnReply.splice(replyIndex1, 1);
+
+        await post.save();
+		res.status(200).json({ message: "Reply deleted successfully" });
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+const deleteReplies = async (req, res) => {
+	try {
+		const { replyDelId } = req.body;
+		const post = await Post.findById(req.params.id);
+		if (!post) {
+			return res.status(404).json({ error: "Post not found" });
+		}
+
+
+		const replyIndex = post.commentsOnReply.findIndex((reply) => reply._id.toString() === replyDelId);
+		
+        if (replyIndex === -1) {
+            return res.status(404).json({ error: "Reply not found" });
+        }
+
+        // Check if the user is authorized to delete the reply
+        if (post.commentsOnReply[replyIndex].commenteruserId.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ error: "Unauthorized to delete this reply" });
+        }
+
+        // Remove the reply from the replies array
+        post.commentsOnReply.splice(replyIndex, 1);
+        await post.save();
+		res.status(200).json({ message: "Reply deleted successfully" });
+
+
+
+
+
+		
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+
+
+export {createPost, getPost ,deletePost ,likeUnlikePost ,replyToPost ,getFeedPosts ,getUserPosts ,replyToReply ,replyToLikeUnlike,deleteReply ,deleteReplies };

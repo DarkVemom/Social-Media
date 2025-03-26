@@ -41,9 +41,51 @@ const postSchema = mongoose.Schema({
                 ref: "User",
                 default: [],
             },
-            commentsOn : Date,
+            commentsOn: {
+                type: Date,
+                default: Date.now,
+            },
         },
     ],
+    commentsOnReply:[
+        {
+            commenteruserId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+                // required: true,
+            },
+            commenterToReplyId:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+                // required: true,
+            },
+            postToReplyId:{
+                type: String,
+                default: null,
+            },
+
+            commentertext: {
+                type: String,
+                // required: true,
+            },
+            commenteruserProfilePic: {
+                type: String,
+            },
+            commenterusername: {
+                type: String,
+            },
+            commenterlikes:{
+                type: [mongoose.Schema.Types.ObjectId],
+                ref: "User",
+                default: [],
+            },
+            commenterCommentsOn: {
+                type: Date,
+                default: Date.now,
+            },
+        }
+    ],
+
 
 },
 {
